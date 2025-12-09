@@ -7,14 +7,21 @@
         "php": ">=8.2",
         "ext-ctype": "*",
         "ext-iconv": "*",
+        "doctrine/doctrine-bundle": "^3.1",
+        "doctrine/doctrine-migrations-bundle": "^4.0",
+        "doctrine/orm": "^3.5",
+        "lexik/jwt-authentication-bundle": "^3.1",
         "symfony/console": "7.4.*",
         "symfony/dotenv": "7.4.*",
         "symfony/flex": "^2",
         "symfony/framework-bundle": "7.4.*",
+        "symfony/mailer": "7.4.*",
+        "symfony/messenger": "7.4.*",
         "symfony/runtime": "7.4.*",
+        "symfony/scheduler": "7.4.*",
+        "symfony/security-bundle": "7.4.*",
+        "symfony/validator": "7.4.*",
         "symfony/yaml": "7.4.*"
-    },
-    "require-dev": {
     },
     "config": {
         "allow-plugins": {
@@ -63,7 +70,11 @@
     "extra": {
         "symfony": {
             "allow-contrib": false,
-            "require": "7.4.*"
+            "require": "7.4.*",
+            "docker": false
         }
+    },
+    "require-dev": {
+        "symfony/maker-bundle": "^1.65"
     }
 }

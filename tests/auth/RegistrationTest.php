@@ -1,17 +1,20 @@
 <?php
 
-namespace tests\auth;
+namespace App\Tests\auth;
 
+use App\Tests\DatabaseTransactionTrait;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 class RegistrationTest extends WebTestCase
 {
+    use DatabaseTransactionTrait;
     private $client;
 
     protected function setUp(): void
     {
         $this->client = static::createClient();
 
+        $this->startTransaction();
 
         $this->client->setServerParameters([
             'CONTENT_TYPE' => 'application/json',
@@ -77,16 +80,78 @@ class RegistrationTest extends WebTestCase
 
         // On vérifie que le statut HTTP indique un problème client (400 ou 422)
         $this->assertResponseStatusCodeSame(422);
+
+        $responseContent = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertStringContainsString(
+            'The provided value is not a valid email address.',
+            $responseContent['detail']
+        );
+    }
+
+    public function testInvalideLengthPasswordRegistration(): void
+    {
+        $userData = [
+            'email' => 'email@gmail.com',
+            'password' => '123',
+            'firstName' => 'Test',
+            'lastName' => 'Fail',
+            'type' => 'agency'
+        ];
+
+        // 2. Simuler la requête POST
+        $this->client->request(
+            'POST',
+            '/api/auth',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($userData)
+        );
+
+        // On vérifie que le statut HTTP indique un problème client (422 ou 422)
+        $this->assertResponseStatusCodeSame(422);
+
+        $responseContent = json_decode($this->client->getResponse()->getContent(), true);
+
+        $this->assertStringContainsString(
+            'password: The password must be at least 8 characters long.',
+            $responseContent['detail']
+        );
+    }
+
+    public function testInvalidTypeRegistration(): void
+    {
+        $userData = [
+            'email' => 'email@gmail.com',
+            'password' => 'SecurePass123!',
+            'firstName' => 'Test',
+            'lastName' => 'Fail',
+            'type' => 'nomad'
+        ];
+
+        // 2. Simuler la requête POST
+        $this->client->request(
+            'POST',
+            '/api/auth',
+            [],
+            [],
+            ['CONTENT_TYPE' => 'application/json'],
+            json_encode($userData)
+        );
+
+        // 3. Vérifications (Assertions)
+
+        // On vérifie que le statut HTTP indique un problème client (422 ou 422)
+        $this->assertResponseStatusCodeSame(422);
     }
 
     protected function tearDown(): void
     {
-        // 1. Appeler l'arrêt du Kernel de Symfony
-        static::ensureKernelShutdown();
-
-        // 2. Nettoyer la propriété
+        $this->rollbackTransaction();
         $this->client = null;
 
+        static::ensureKernelShutdown();
         parent::tearDown();
     }
 }

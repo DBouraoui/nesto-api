@@ -14,7 +14,6 @@ class RegisterDTO
 
     #[Assert\NotBlank(message: "The password cannot be empty.")]
     #[Assert\Length(min: 8, max: 255, minMessage: "The password must be at least 8 characters long.")]
-    #[Assert\NotCompromisedPassword(message: "This password has been found in data breaches and is compromised. Please choose a different one.")]
     public string $password;
 
     #[Assert\NotBlank(message: "The first name cannot be empty.")]

@@ -7,6 +7,7 @@ securty-bundle 7.4
 lexykbundle 3.1
 maker bundle dev 1.0
 doctrine 3.0
+dama/doctrine-test-bundle
 
 Installation sans docker : 
 

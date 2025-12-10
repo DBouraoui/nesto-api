@@ -16,8 +16,7 @@ class UserService
 
     public function createFromRequest(RegisterDTO $DTO): User {
         $user = $this->userFactory->createFromRequest($DTO);
-
-
+        
         if ($this->userRepository->isUniqueEmail($user->getEmail())) {
             $this->userRepository->save($user, true);
         } else {

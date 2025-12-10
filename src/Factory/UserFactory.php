@@ -4,14 +4,13 @@ namespace App\Factory;
 
 use App\Dto\auth\RegisterDTO;
 use App\Entity\User;
-use App\Enum\UserTypeEnum;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Uid\Uuid;
 
 class UserFactory
 {
  public function __construct(
-     private UserPasswordHasherInterface $userPasswordHasher,
+     private readonly UserPasswordHasherInterface $userPasswordHasher,
  ){}
 
     public function createFromRequest(RegisterDTO $DTO): User
@@ -24,6 +23,7 @@ class UserFactory
         $user->setFirstName($DTO->firstName);
         $user->setLastName($DTO->lastName);
         $user->setType($DTO->type);
+        $user->setCreatedAt(new \DateTimeImmutable());
 
         $hashedPassword = $this->userPasswordHasher->hashPassword(
             $user,

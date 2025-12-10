@@ -4,6 +4,8 @@ namespace App\Entity;
 
 use App\Enum\UserTypeEnum;
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -53,6 +55,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\Column(type: "string",enumType: UserTypeEnum::class)]
     private ?UserTypeEnum $type = null;
+
+    /**
+     * @var Collection<int, AuthenticationLogs>
+     */
+    #[ORM\OneToMany(targetEntity: AuthenticationLogs::class, mappedBy: 'user')]
+    private Collection $authenticationLogs;
+
+    public function __construct()
+    {
+        $this->authenticationLogs = new ArrayCollection();
+    }
+
 
     public function getId(): ?int
     {
@@ -215,6 +229,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setType(UserTypeEnum $type): static
     {
         $this->type = $type;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, AuthenticationLogs>
+     */
+    public function getAuthenticationLogs(): Collection
+    {
+        return $this->authenticationLogs;
+    }
+
+    public function addAuthenticationLog(AuthenticationLogs $authenticationLog): static
+    {
+        if (!$this->authenticationLogs->contains($authenticationLog)) {
+            $this->authenticationLogs->add($authenticationLog);
+            $authenticationLog->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeAuthenticationLog(AuthenticationLogs $authenticationLog): static
+    {
+        if ($this->authenticationLogs->removeElement($authenticationLog)) {
+            // set the owning side to null (unless already changed)
+            if ($authenticationLog->getUser() === $this) {
+                $authenticationLog->setUser(null);
+            }
+        }
 
         return $this;
     }

@@ -5,6 +5,7 @@ namespace App\Controller\auth;
 use App\Dto\auth\RegisterDTO;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\Routing\Attribute\Route;
 
@@ -24,17 +25,14 @@ class RegisterController extends AbstractController
 
             return $this->json([
                 'success' => true,
-                'message'=>"ok",
-                "data"=> [
-                    $user
-            ]
-            ]);
+                'message'=>"user created",
+            ], Response::HTTP_CREATED);
 
         } catch(\Throwable $e) {
             return $this->json([
                 'success' => false,
                 'message' => $e->getMessage(),
-            ]);
+            ], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
     }
 }
